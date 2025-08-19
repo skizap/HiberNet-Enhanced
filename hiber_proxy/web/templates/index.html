@@ -1,0 +1,334 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - HiberNet Enhanced{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <!-- System Overview -->
+    <div class="terminal-window">
+        <div class="terminal-header">
+            <span>System Overview</span>
+            <span id="last-update">Last updated: --:--:--</span>
+        </div>
+        <div class="terminal-content">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-label">Total Proxies</div>
+                    <div class="stat-value" id="total-proxies">--</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Working Proxies</div>
+                    <div class="stat-value status-working" id="working-proxies">--</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Failed Proxies</div>
+                    <div class="stat-value status-failed" id="failed-proxies">--</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Success Rate</div>
+                    <div class="stat-value" id="success-rate">--%</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Avg Response Time</div>
+                    <div class="stat-value" id="avg-response-time">--ms</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Last Check</div>
+                    <div class="stat-value" id="last-check">--</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="terminal-window">
+        <div class="terminal-header">
+            <span>Quick Actions</span>
+        </div>
+        <div class="terminal-content">
+            <div class="action-buttons">
+                <button class="btn" onclick="downloadProxies()">
+                    <span>▼</span> Download Proxies
+                </button>
+                <button class="btn" onclick="checkProxies()">
+                    <span>⚡</span> Check Proxies
+                </button>
+                <button class="btn" onclick="cleanupDatabase()">
+                    <span>🗑</span> Cleanup Database
+                </button>
+                <button class="btn btn-secondary" onclick="exportProxies()">
+                    <span>📤</span> Export Proxies
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="terminal-window">
+        <div class="terminal-header">
+            <span>Recent Activity</span>
+            <button class="btn btn-secondary" onclick="clearActivity()">Clear</button>
+        </div>
+        <div class="terminal-content">
+            <div class="activity-log" id="activity-log">
+                <div class="activity-item">
+                    <span class="activity-time">[--:--:--]</span>
+                    <span class="activity-message">System initialized</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Protocol Distribution Chart -->
+    <div class="terminal-window">
+        <div class="terminal-header">
+            <span>Protocol Distribution</span>
+        </div>
+        <div class="terminal-content">
+            <canvas id="protocol-chart" width="400" height="200"></canvas>
+        </div>
+    </div>
+</div>
+
+<style>
+.dashboard {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1rem;
+    background-color: var(--bg-tertiary);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+}
+
+.stat-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.stat-value {
+    color: var(--orange-primary);
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.action-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.activity-log {
+    max-height: 200px;
+    overflow-y: auto;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+}
+
+.activity-item {
+    padding: 0.25rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-time {
+    color: var(--orange-primary);
+    margin-right: 0.5rem;
+}
+
+.activity-message {
+    color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+    .dashboard {
+        grid-template-columns: 1fr;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .action-buttons {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    updateDashboard();
+    initProtocolChart();
+    
+    // Update dashboard every 30 seconds
+    setInterval(updateDashboard, 30000);
+});
+
+function updateDashboard() {
+    fetch('/api/stats')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('total-proxies').textContent = data.total_proxies || '--';
+            document.getElementById('working-proxies').textContent = data.working_proxies || '--';
+            document.getElementById('failed-proxies').textContent = (data.total_proxies - data.working_proxies) || '--';
+            document.getElementById('success-rate').textContent = data.average_success_rate ? data.average_success_rate.toFixed(1) + '%' : '--%';
+            document.getElementById('avg-response-time').textContent = data.average_response_time ? data.average_response_time.toFixed(0) + 'ms' : '--ms';
+            document.getElementById('last-check').textContent = data.last_check || '--';
+            document.getElementById('last-update').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+        })
+        .catch(error => {
+            console.error('Error updating dashboard:', error);
+            addActivity('Error updating dashboard: ' + error.message);
+        });
+}
+
+function initProtocolChart() {
+    const ctx = document.getElementById('protocol-chart').getContext('2d');
+    window.protocolChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['HTTP', 'HTTPS', 'SOCKS4', 'SOCKS5'],
+            datasets: [{
+                data: [0, 0, 0, 0],
+                backgroundColor: ['#ff6600', '#ff8533', '#ffaa66', '#cc5500'],
+                borderColor: '#1a1a1a',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#ffffff',
+                        font: {
+                            family: 'Courier New, Monaco, Menlo, monospace'
+                        }
+                    }
+                }
+            }
+        }
+    });
+    
+    updateProtocolChart();
+}
+
+function updateProtocolChart() {
+    fetch('/api/protocol-stats')
+        .then(response => response.json())
+        .then(data => {
+            window.protocolChart.data.datasets[0].data = [
+                data.http || 0,
+                data.https || 0,
+                data.socks4 || 0,
+                data.socks5 || 0
+            ];
+            window.protocolChart.update();
+        })
+        .catch(error => {
+            console.error('Error updating protocol chart:', error);
+        });
+}
+
+function downloadProxies() {
+    addActivity('Starting proxy download...');
+    fetch('/api/download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            addActivity(`Downloaded ${data.total_proxies_imported || 0} new proxies`);
+            updateDashboard();
+            updateProtocolChart();
+        })
+        .catch(error => {
+            addActivity('Error downloading proxies: ' + error.message);
+        });
+}
+
+function checkProxies() {
+    addActivity('Starting proxy check...');
+    fetch('/api/check', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ limit: 100, working_only: false })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            addActivity(`Checked ${data.checked || 0} proxies, ${data.working || 0} working`);
+            updateDashboard();
+        })
+        .catch(error => {
+            addActivity('Error checking proxies: ' + error.message);
+        });
+}
+
+function cleanupDatabase() {
+    if (confirm('Are you sure you want to cleanup failed proxies?')) {
+        addActivity('Starting database cleanup...');
+        fetch('/api/cleanup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                addActivity(`Cleaned up ${data.removed || 0} failed proxies`);
+                updateDashboard();
+            })
+            .catch(error => {
+                addActivity('Error during cleanup: ' + error.message);
+            });
+    }
+}
+
+function exportProxies() {
+    window.location.href = '/api/export';
+    addActivity('Exporting proxies...');
+}
+
+function clearActivity() {
+    document.getElementById('activity-log').innerHTML = '<div class="activity-item"><span class="activity-time">[' + new Date().toLocaleTimeString() + ']</span><span class="activity-message">Activity log cleared</span></div>';
+}
+
+function addActivity(message) {
+    const log = document.getElementById('activity-log');
+    const item = document.createElement('div');
+    item.className = 'activity-item';
+    item.innerHTML = `<span class="activity-time">[${new Date().toLocaleTimeString()}]</span><span class="activity-message">${message}</span>`;
+    log.insertBefore(item, log.firstChild);
+    
+    // Keep only last 20 items
+    while (log.children.length > 20) {
+        log.removeChild(log.lastChild);
+    }
+}
+</script>
+{% endblock %}

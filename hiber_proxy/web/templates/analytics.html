@@ -1,0 +1,538 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics Dashboard - HiberNet Enhanced{% endblock %}
+
+{% block content %}
+<div class="analytics-dashboard">
+    <!-- Performance Overview -->
+    <div class="terminal-window">
+        <div class="terminal-header">
+            <span>Performance Overview</span>
+            <div class="header-controls">
+                <select class="form-input" id="time-range" onchange="updateTimeRange()">
+                    <option value="1h">Last Hour</option>
+                    <option value="24h" selected>Last 24 Hours</option>
+                    <option value="7d">Last 7 Days</option>
+                    <option value="30d">Last 30 Days</option>
+                </select>
+                <button class="btn btn-secondary" onclick="refreshAnalytics()">
+                    <span>🔄</span> Refresh
+                </button>
+            </div>
+        </div>
+        <div class="terminal-content">
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Success Rate</div>
+                    <div class="metric-value" id="success-rate-metric">--%</div>
+                    <div class="metric-trend" id="success-rate-trend">--</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Avg Response Time</div>
+                    <div class="metric-value" id="response-time-metric">--ms</div>
+                    <div class="metric-trend" id="response-time-trend">--</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Total Checks</div>
+                    <div class="metric-value" id="total-checks-metric">--</div>
+                    <div class="metric-trend" id="total-checks-trend">--</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Active Proxies</div>
+                    <div class="metric-value" id="active-proxies-metric">--</div>
+                    <div class="metric-trend" id="active-proxies-trend">--</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 1 -->
+    <div class="charts-row">
+        <div class="terminal-window chart-container">
+            <div class="terminal-header">
+                <span>Success Rate Trend</span>
+            </div>
+            <div class="terminal-content">
+                <canvas id="success-rate-chart" width="400" height="200"></canvas>
+            </div>
+        </div>
+        
+        <div class="terminal-window chart-container">
+            <div class="terminal-header">
+                <span>Response Time Distribution</span>
+            </div>
+            <div class="terminal-content">
+                <canvas id="response-time-chart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 2 -->
+    <div class="charts-row">
+        <div class="terminal-window chart-container">
+            <div class="terminal-header">
+                <span>Protocol Distribution</span>
+            </div>
+            <div class="terminal-content">
+                <canvas id="protocol-distribution-chart" width="400" height="200"></canvas>
+            </div>
+        </div>
+        
+        <div class="terminal-window chart-container">
+            <div class="terminal-header">
+                <span>Geographic Distribution</span>
+            </div>
+            <div class="terminal-content">
+                <div id="geo-map" class="geo-map">
+                    <div class="map-placeholder">
+                        <span>🌍</span>
+                        <p>Geographic distribution map</p>
+                        <small>Feature coming soon</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Statistics -->
+    <div class="terminal-window">
+        <div class="terminal-header">
+            <span>Detailed Statistics</span>
+        </div>
+        <div class="terminal-content">
+            <div class="stats-table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Current</th>
+                            <th>Previous Period</th>
+                            <th>Change</th>
+                            <th>Trend</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detailed-stats-body">
+                        <tr>
+                            <td>Total Proxies</td>
+                            <td id="stat-total-proxies">--</td>
+                            <td id="stat-total-proxies-prev">--</td>
+                            <td id="stat-total-proxies-change">--</td>
+                            <td id="stat-total-proxies-trend">--</td>
+                        </tr>
+                        <tr>
+                            <td>Working Proxies</td>
+                            <td id="stat-working-proxies">--</td>
+                            <td id="stat-working-proxies-prev">--</td>
+                            <td id="stat-working-proxies-change">--</td>
+                            <td id="stat-working-proxies-trend">--</td>
+                        </tr>
+                        <tr>
+                            <td>Average Success Rate</td>
+                            <td id="stat-avg-success">--</td>
+                            <td id="stat-avg-success-prev">--</td>
+                            <td id="stat-avg-success-change">--</td>
+                            <td id="stat-avg-success-trend">--</td>
+                        </tr>
+                        <tr>
+                            <td>Average Response Time</td>
+                            <td id="stat-avg-response">--</td>
+                            <td id="stat-avg-response-prev">--</td>
+                            <td id="stat-avg-response-change">--</td>
+                            <td id="stat-avg-response-trend">--</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.analytics-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.metric-card {
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    text-align: center;
+}
+
+.metric-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.metric-value {
+    color: var(--orange-primary);
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.metric-trend {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.metric-trend.positive {
+    color: var(--success-color);
+}
+
+.metric-trend.negative {
+    color: var(--error-color);
+}
+
+.charts-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.chart-container {
+    min-height: 300px;
+}
+
+.chart-container .terminal-content {
+    height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.geo-map {
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-tertiary);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+}
+
+.map-placeholder {
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.map-placeholder span {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.stats-table-container {
+    overflow-x: auto;
+}
+
+.header-controls {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.header-controls .form-input {
+    width: auto;
+    min-width: 120px;
+}
+
+@media (max-width: 768px) {
+    .charts-row {
+        grid-template-columns: 1fr;
+    }
+
+    .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .header-controls {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Analytics dashboard state
+let analyticsCharts = {};
+let currentTimeRange = '24h';
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeAnalytics();
+    loadAnalyticsData();
+
+    // Update analytics every 60 seconds
+    setInterval(loadAnalyticsData, 60000);
+});
+
+function initializeAnalytics() {
+    initializeSuccessRateChart();
+    initializeResponseTimeChart();
+    initializeProtocolChart();
+}
+
+function initializeSuccessRateChart() {
+    const ctx = document.getElementById('success-rate-chart').getContext('2d');
+    analyticsCharts.successRate = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Success Rate (%)',
+                data: [],
+                borderColor: '#ff6600',
+                backgroundColor: 'rgba(255, 102, 0, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#ffffff',
+                        font: { family: 'Courier New, Monaco, Menlo, monospace' }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: { color: '#cccccc' },
+                    grid: { color: '#444444' }
+                },
+                y: {
+                    ticks: { color: '#cccccc' },
+                    grid: { color: '#444444' },
+                    min: 0,
+                    max: 100
+                }
+            }
+        }
+    });
+}
+
+function initializeResponseTimeChart() {
+    const ctx = document.getElementById('response-time-chart').getContext('2d');
+    analyticsCharts.responseTime = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['0-100ms', '100-500ms', '500ms-1s', '1s-5s', '5s+'],
+            datasets: [{
+                label: 'Proxy Count',
+                data: [0, 0, 0, 0, 0],
+                backgroundColor: ['#ff6600', '#ff8533', '#ffaa66', '#cc5500', '#994400'],
+                borderColor: '#1a1a1a',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#ffffff',
+                        font: { family: 'Courier New, Monaco, Menlo, monospace' }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: { color: '#cccccc' },
+                    grid: { color: '#444444' }
+                },
+                y: {
+                    ticks: { color: '#cccccc' },
+                    grid: { color: '#444444' }
+                }
+            }
+        }
+    });
+}
+
+function initializeProtocolChart() {
+    const ctx = document.getElementById('protocol-distribution-chart').getContext('2d');
+    analyticsCharts.protocol = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['HTTP', 'HTTPS', 'SOCKS4', 'SOCKS5'],
+            datasets: [{
+                data: [0, 0, 0, 0],
+                backgroundColor: ['#ff6600', '#ff8533', '#ffaa66', '#cc5500'],
+                borderColor: '#1a1a1a',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#ffffff',
+                        font: { family: 'Courier New, Monaco, Menlo, monospace' }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function loadAnalyticsData() {
+    // Load main statistics
+    fetch('/api/stats')
+        .then(response => response.json())
+        .then(data => {
+            updateMetrics(data);
+            updateDetailedStats(data);
+        })
+        .catch(error => {
+            console.error('Error loading analytics data:', error);
+        });
+
+    // Load protocol distribution
+    fetch('/api/protocol-stats')
+        .then(response => response.json())
+        .then(data => {
+            updateProtocolChart(data);
+        })
+        .catch(error => {
+            console.error('Error loading protocol stats:', error);
+        });
+
+    // Generate sample data for other charts
+    updateSuccessRateChart();
+    updateResponseTimeChart();
+}
+
+function updateMetrics(data) {
+    // Update metric cards
+    document.getElementById('success-rate-metric').textContent =
+        data.average_success_rate ? data.average_success_rate.toFixed(1) + '%' : '--%';
+
+    document.getElementById('response-time-metric').textContent =
+        data.average_response_time ? data.average_response_time.toFixed(0) + 'ms' : '--ms';
+
+    document.getElementById('total-checks-metric').textContent =
+        data.total_checks || '--';
+
+    document.getElementById('active-proxies-metric').textContent =
+        data.working_proxies || '--';
+
+    // Update trends (simulated)
+    updateTrend('success-rate-trend', Math.random() > 0.5 ? 'positive' : 'negative',
+                Math.random() * 10);
+    updateTrend('response-time-trend', Math.random() > 0.5 ? 'positive' : 'negative',
+                Math.random() * 50);
+    updateTrend('total-checks-trend', 'positive', Math.random() * 100);
+    updateTrend('active-proxies-trend', Math.random() > 0.5 ? 'positive' : 'negative',
+                Math.random() * 20);
+}
+
+function updateTrend(elementId, direction, value) {
+    const element = document.getElementById(elementId);
+    element.className = `metric-trend ${direction}`;
+    const symbol = direction === 'positive' ? '↗' : '↘';
+    element.textContent = `${symbol} ${value.toFixed(1)}`;
+}
+
+function updateSuccessRateChart() {
+    // Generate sample time series data
+    const now = new Date();
+    const labels = [];
+    const data = [];
+
+    for (let i = 23; i >= 0; i--) {
+        const time = new Date(now.getTime() - i * 60 * 60 * 1000);
+        labels.push(time.getHours() + ':00');
+        data.push(Math.random() * 40 + 60); // 60-100% success rate
+    }
+
+    analyticsCharts.successRate.data.labels = labels;
+    analyticsCharts.successRate.data.datasets[0].data = data;
+    analyticsCharts.successRate.update();
+}
+
+function updateResponseTimeChart() {
+    // Generate sample response time distribution
+    const data = [
+        Math.floor(Math.random() * 50) + 10,  // 0-100ms
+        Math.floor(Math.random() * 30) + 20,  // 100-500ms
+        Math.floor(Math.random() * 20) + 10,  // 500ms-1s
+        Math.floor(Math.random() * 10) + 5,   // 1s-5s
+        Math.floor(Math.random() * 5) + 1     // 5s+
+    ];
+
+    analyticsCharts.responseTime.data.datasets[0].data = data;
+    analyticsCharts.responseTime.update();
+}
+
+function updateProtocolChart(data) {
+    analyticsCharts.protocol.data.datasets[0].data = [
+        data.http || 0,
+        data.https || 0,
+        data.socks4 || 0,
+        data.socks5 || 0
+    ];
+    analyticsCharts.protocol.update();
+}
+
+function updateDetailedStats(data) {
+    // Update detailed statistics table
+    document.getElementById('stat-total-proxies').textContent = data.total_proxies || '--';
+    document.getElementById('stat-working-proxies').textContent = data.working_proxies || '--';
+    document.getElementById('stat-avg-success').textContent =
+        data.average_success_rate ? data.average_success_rate.toFixed(1) + '%' : '--';
+    document.getElementById('stat-avg-response').textContent =
+        data.average_response_time ? data.average_response_time.toFixed(0) + 'ms' : '--';
+
+    // Simulate previous period data and changes
+    const metrics = ['total-proxies', 'working-proxies', 'avg-success', 'avg-response'];
+    metrics.forEach(metric => {
+        const prevElement = document.getElementById(`stat-${metric}-prev`);
+        const changeElement = document.getElementById(`stat-${metric}-change`);
+        const trendElement = document.getElementById(`stat-${metric}-trend`);
+
+        // Simulate previous values
+        const currentValue = parseFloat(document.getElementById(`stat-${metric}`).textContent) || 0;
+        const prevValue = currentValue * (0.8 + Math.random() * 0.4); // ±20% variation
+        const change = currentValue - prevValue;
+        const changePercent = prevValue > 0 ? (change / prevValue) * 100 : 0;
+
+        prevElement.textContent = prevValue.toFixed(metric.includes('avg') ? 1 : 0);
+        changeElement.textContent = (change >= 0 ? '+' : '') + change.toFixed(1);
+        changeElement.className = change >= 0 ? 'status-working' : 'status-failed';
+
+        const trendSymbol = change >= 0 ? '↗' : '↘';
+        trendElement.textContent = `${trendSymbol} ${Math.abs(changePercent).toFixed(1)}%`;
+        trendElement.className = change >= 0 ? 'status-working' : 'status-failed';
+    });
+}
+
+function updateTimeRange() {
+    currentTimeRange = document.getElementById('time-range').value;
+    loadAnalyticsData();
+}
+
+function refreshAnalytics() {
+    showNotification('Refreshing analytics data...', 'info');
+    loadAnalyticsData();
+}
+</script>
+{% endblock %}

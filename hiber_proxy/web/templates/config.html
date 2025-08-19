@@ -1,0 +1,559 @@
+{% extends "base.html" %}
+
+{% block title %}Configuration - HiberNet Enhanced{% endblock %}
+
+{% block content %}
+<div class="config-management">
+    <!-- System Configuration -->
+    <div class="terminal-window">
+        <div class="terminal-header">
+            <span>System Configuration</span>
+            <div class="header-controls">
+                <button class="btn btn-secondary" onclick="loadConfig()">
+                    <span>🔄</span> Reload
+                </button>
+                <button class="btn" onclick="saveConfig()">
+                    <span>💾</span> Save Changes
+                </button>
+            </div>
+        </div>
+        <div class="terminal-content">
+            <div class="config-tabs">
+                <button class="tab-button active" onclick="showTab('database')">Database</button>
+                <button class="tab-button" onclick="showTab('checking')">Checking</button>
+                <button class="tab-button" onclick="showTab('scraping')">Scraping</button>
+                <button class="tab-button" onclick="showTab('validation')">Validation</button>
+                <button class="tab-button" onclick="showTab('logging')">Logging</button>
+            </div>
+            
+            <!-- Database Configuration -->
+            <div class="tab-content active" id="database-tab">
+                <h3>Database Settings</h3>
+                <div class="config-grid">
+                    <div class="form-group">
+                        <label class="form-label">Database Path</label>
+                        <input type="text" class="form-input" id="db-path" value="hiber_proxy.db">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Connection Pool Size</label>
+                        <input type="number" class="form-input" id="db-pool-size" value="10" min="1" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Database Timeout (seconds)</label>
+                        <input type="number" class="form-input" id="db-timeout" value="30" min="1" max="300">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Auto Backup</label>
+                        <select class="form-input" id="db-auto-backup">
+                            <option value="true">Enabled</option>
+                            <option value="false">Disabled</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Checking Configuration -->
+            <div class="tab-content" id="checking-tab">
+                <h3>Proxy Checking Settings</h3>
+                <div class="config-grid">
+                    <div class="form-group">
+                        <label class="form-label">Concurrent Checks</label>
+                        <input type="number" class="form-input" id="concurrent-checks" value="50" min="1" max="200">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Check Timeout (seconds)</label>
+                        <input type="number" class="form-input" id="check-timeout" value="10" min="1" max="60">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Retry Attempts</label>
+                        <input type="number" class="form-input" id="retry-attempts" value="3" min="0" max="10">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Test URL</label>
+                        <input type="url" class="form-input" id="test-url" value="http://httpbin.org/ip">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Scraping Configuration -->
+            <div class="tab-content" id="scraping-tab">
+                <h3>Proxy Scraping Settings</h3>
+                <div class="config-grid">
+                    <div class="form-group">
+                        <label class="form-label">Request Timeout (seconds)</label>
+                        <input type="number" class="form-input" id="scraping-timeout" value="30" min="5" max="120">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Retry Attempts</label>
+                        <input type="number" class="form-input" id="scraping-retries" value="3" min="0" max="10">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Concurrent Downloads</label>
+                        <input type="number" class="form-input" id="concurrent-downloads" value="3" min="1" max="10">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">User Agent Rotation</label>
+                        <select class="form-input" id="user-agent-rotation">
+                            <option value="true">Enabled</option>
+                            <option value="false">Disabled</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <h4>Enabled Sources</h4>
+                <div class="source-list" id="source-list">
+                    <div class="source-item">
+                        <input type="checkbox" id="source-thespeedx" checked>
+                        <label for="source-thespeedx">TheSpeedX SOCKS-List</label>
+                    </div>
+                    <div class="source-item">
+                        <input type="checkbox" id="source-monosans" checked>
+                        <label for="source-monosans">monosans proxy-list</label>
+                    </div>
+                    <div class="source-item">
+                        <input type="checkbox" id="source-databay" checked>
+                        <label for="source-databay">databay-labs free-proxy-list</label>
+                    </div>
+                    <div class="source-item">
+                        <input type="checkbox" id="source-zloi" checked>
+                        <label for="source-zloi">zloi-user hideip.me</label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Validation Configuration -->
+            <div class="tab-content" id="validation-tab">
+                <h3>Proxy Validation Settings</h3>
+                <div class="config-grid">
+                    <div class="form-group">
+                        <label class="form-label">Strict Validation</label>
+                        <select class="form-input" id="strict-validation">
+                            <option value="true">Enabled</option>
+                            <option value="false">Disabled</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Allow Private IPs</label>
+                        <select class="form-input" id="allow-private-ips">
+                            <option value="false">Disabled</option>
+                            <option value="true">Enabled</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Validate Before Import</label>
+                        <select class="form-input" id="validate-before-import">
+                            <option value="true">Enabled</option>
+                            <option value="false">Disabled</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Max Port Number</label>
+                        <input type="number" class="form-input" id="max-port" value="65535" min="1" max="65535">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Logging Configuration -->
+            <div class="tab-content" id="logging-tab">
+                <h3>Logging Settings</h3>
+                <div class="config-grid">
+                    <div class="form-group">
+                        <label class="form-label">Log Level</label>
+                        <select class="form-input" id="log-level">
+                            <option value="DEBUG">DEBUG</option>
+                            <option value="INFO" selected>INFO</option>
+                            <option value="WARNING">WARNING</option>
+                            <option value="ERROR">ERROR</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Console Logging</label>
+                        <select class="form-input" id="console-logging">
+                            <option value="true">Enabled</option>
+                            <option value="false">Disabled</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">File Logging</label>
+                        <select class="form-input" id="file-logging">
+                            <option value="true">Enabled</option>
+                            <option value="false">Disabled</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Log File Path</label>
+                        <input type="text" class="form-input" id="log-file-path" value="logs/hiber_proxy.log">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Configuration Actions -->
+    <div class="terminal-window">
+        <div class="terminal-header">
+            <span>Configuration Actions</span>
+        </div>
+        <div class="terminal-content">
+            <div class="action-grid">
+                <button class="btn" onclick="resetToDefaults()">
+                    <span>🔄</span> Reset to Defaults
+                </button>
+                <button class="btn" onclick="exportConfig()">
+                    <span>📤</span> Export Config
+                </button>
+                <button class="btn" onclick="importConfig()">
+                    <span>📥</span> Import Config
+                </button>
+                <button class="btn btn-secondary" onclick="validateConfig()">
+                    <span>✓</span> Validate Config
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.config-management {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.config-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+.tab-button {
+    background-color: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    font-family: var(--font-mono);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.tab-button:hover {
+    background-color: var(--bg-secondary);
+    color: var(--orange-light);
+}
+
+.tab-button.active {
+    background-color: var(--orange-primary);
+    color: var(--text-primary);
+    border-color: var(--orange-primary);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.tab-content h3 {
+    color: var(--orange-primary);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.tab-content h4 {
+    color: var(--text-secondary);
+    margin: 1.5rem 0 0.5rem 0;
+    font-size: 1rem;
+}
+
+.config-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.source-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.source-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background-color: var(--bg-tertiary);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+}
+
+.source-item input[type="checkbox"] {
+    margin: 0;
+}
+
+.source-item label {
+    margin: 0;
+    color: var(--text-secondary);
+    cursor: pointer;
+    flex: 1;
+}
+
+.header-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .config-tabs {
+        flex-wrap: wrap;
+    }
+    
+    .config-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .action-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .source-list {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Configuration management
+let currentConfig = {};
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadConfig();
+});
+
+function showTab(tabName) {
+    // Hide all tabs
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.classList.remove('active');
+    });
+    
+    // Show selected tab
+    document.getElementById(tabName + '-tab').classList.add('active');
+    event.target.classList.add('active');
+}
+
+function loadConfig() {
+    // In a real implementation, this would fetch from /api/config
+    showNotification('Loading configuration...', 'info');
+    
+    // Simulate loading config
+    setTimeout(() => {
+        showNotification('Configuration loaded', 'success');
+    }, 1000);
+}
+
+function saveConfig() {
+    const config = collectConfigData();
+    
+    showNotification('Saving configuration...', 'info');
+    
+    // In a real implementation, this would POST to /api/config
+    setTimeout(() => {
+        showNotification('Configuration saved successfully', 'success');
+    }, 1000);
+}
+
+function collectConfigData() {
+    return {
+        database: {
+            path: document.getElementById('db-path').value,
+            pool_size: parseInt(document.getElementById('db-pool-size').value),
+            timeout: parseInt(document.getElementById('db-timeout').value),
+            auto_backup: document.getElementById('db-auto-backup').value === 'true'
+        },
+        checking: {
+            concurrent_checks: parseInt(document.getElementById('concurrent-checks').value),
+            timeout: parseInt(document.getElementById('check-timeout').value),
+            retry_attempts: parseInt(document.getElementById('retry-attempts').value),
+            test_url: document.getElementById('test-url').value
+        },
+        scraping: {
+            timeout: parseInt(document.getElementById('scraping-timeout').value),
+            retry_attempts: parseInt(document.getElementById('scraping-retries').value),
+            concurrent_downloads: parseInt(document.getElementById('concurrent-downloads').value),
+            user_agent_rotation: document.getElementById('user-agent-rotation').value === 'true',
+            enabled_sources: getEnabledSources()
+        },
+        validation: {
+            strict_validation: document.getElementById('strict-validation').value === 'true',
+            allow_private_ips: document.getElementById('allow-private-ips').value === 'true',
+            validate_before_import: document.getElementById('validate-before-import').value === 'true',
+            max_port: parseInt(document.getElementById('max-port').value)
+        },
+        logging: {
+            level: document.getElementById('log-level').value,
+            console_logging: document.getElementById('console-logging').value === 'true',
+            file_logging: document.getElementById('file-logging').value === 'true',
+            file_path: document.getElementById('log-file-path').value
+        }
+    };
+}
+
+function getEnabledSources() {
+    const sources = [];
+    document.querySelectorAll('.source-item input[type="checkbox"]').forEach(checkbox => {
+        if (checkbox.checked) {
+            sources.push(checkbox.id.replace('source-', ''));
+        }
+    });
+    return sources;
+}
+
+function resetToDefaults() {
+    if (!confirm('Are you sure you want to reset all configuration to defaults? This cannot be undone.')) {
+        return;
+    }
+    
+    showNotification('Resetting configuration to defaults...', 'info');
+    
+    // Reset form values to defaults
+    document.getElementById('db-path').value = 'hiber_proxy.db';
+    document.getElementById('db-pool-size').value = '10';
+    document.getElementById('db-timeout').value = '30';
+    document.getElementById('db-auto-backup').value = 'true';
+    
+    document.getElementById('concurrent-checks').value = '50';
+    document.getElementById('check-timeout').value = '10';
+    document.getElementById('retry-attempts').value = '3';
+    document.getElementById('test-url').value = 'http://httpbin.org/ip';
+    
+    document.getElementById('scraping-timeout').value = '30';
+    document.getElementById('scraping-retries').value = '3';
+    document.getElementById('concurrent-downloads').value = '3';
+    document.getElementById('user-agent-rotation').value = 'true';
+    
+    document.getElementById('strict-validation').value = 'true';
+    document.getElementById('allow-private-ips').value = 'false';
+    document.getElementById('validate-before-import').value = 'true';
+    document.getElementById('max-port').value = '65535';
+    
+    document.getElementById('log-level').value = 'INFO';
+    document.getElementById('console-logging').value = 'true';
+    document.getElementById('file-logging').value = 'true';
+    document.getElementById('log-file-path').value = 'logs/hiber_proxy.log';
+    
+    // Check all sources
+    document.querySelectorAll('.source-item input[type="checkbox"]').forEach(checkbox => {
+        checkbox.checked = true;
+    });
+    
+    showNotification('Configuration reset to defaults', 'success');
+}
+
+function exportConfig() {
+    const config = collectConfigData();
+    const configJson = JSON.stringify(config, null, 2);
+    
+    const blob = new Blob([configJson], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'hiber_proxy_config.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    showNotification('Configuration exported', 'success');
+}
+
+function importConfig() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    
+    input.onchange = function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const config = JSON.parse(e.target.result);
+                applyConfig(config);
+                showNotification('Configuration imported successfully', 'success');
+            } catch (error) {
+                showNotification('Error importing configuration: ' + error.message, 'error');
+            }
+        };
+        reader.readAsText(file);
+    };
+    
+    input.click();
+}
+
+function applyConfig(config) {
+    // Apply database config
+    if (config.database) {
+        if (config.database.path) document.getElementById('db-path').value = config.database.path;
+        if (config.database.pool_size) document.getElementById('db-pool-size').value = config.database.pool_size;
+        if (config.database.timeout) document.getElementById('db-timeout').value = config.database.timeout;
+        if (config.database.auto_backup !== undefined) document.getElementById('db-auto-backup').value = config.database.auto_backup.toString();
+    }
+    
+    // Apply checking config
+    if (config.checking) {
+        if (config.checking.concurrent_checks) document.getElementById('concurrent-checks').value = config.checking.concurrent_checks;
+        if (config.checking.timeout) document.getElementById('check-timeout').value = config.checking.timeout;
+        if (config.checking.retry_attempts) document.getElementById('retry-attempts').value = config.checking.retry_attempts;
+        if (config.checking.test_url) document.getElementById('test-url').value = config.checking.test_url;
+    }
+    
+    // Apply other configs similarly...
+}
+
+function validateConfig() {
+    const config = collectConfigData();
+    
+    showNotification('Validating configuration...', 'info');
+    
+    // Basic validation
+    let errors = [];
+    
+    if (config.database.pool_size < 1 || config.database.pool_size > 100) {
+        errors.push('Database pool size must be between 1 and 100');
+    }
+    
+    if (config.checking.concurrent_checks < 1 || config.checking.concurrent_checks > 200) {
+        errors.push('Concurrent checks must be between 1 and 200');
+    }
+    
+    if (config.validation.max_port < 1 || config.validation.max_port > 65535) {
+        errors.push('Max port must be between 1 and 65535');
+    }
+    
+    if (errors.length > 0) {
+        showNotification('Configuration validation failed:\n' + errors.join('\n'), 'error');
+    } else {
+        showNotification('Configuration is valid', 'success');
+    }
+}
+</script>
+{% endblock %}

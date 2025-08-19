@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}HiberNet Enhanced{% endblock %}</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- Chart.js for analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Socket.IO for real-time updates -->
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="logo">
+                    <span class="logo-bracket">[</span>
+                    <span class="logo-text">HiberNet Enhanced</span>
+                    <span class="logo-bracket">]</span>
+                </h1>
+                <div class="header-info">
+                    <span class="status-indicator" id="connection-status">●</span>
+                    <span class="status-text">Connected</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="navigation">
+            <div class="nav-content">
+                <a href="/" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">
+                    <span class="nav-icon">▶</span> Dashboard
+                </a>
+                <a href="/proxies" class="nav-link {% if request.endpoint == 'proxies' %}active{% endif %}">
+                    <span class="nav-icon">◆</span> Proxies
+                </a>
+                <a href="/stress-test" class="nav-link {% if request.endpoint == 'stress_test' %}active{% endif %}">
+                    <span class="nav-icon">⚡</span> Stress Test
+                </a>
+                <a href="/config" class="nav-link {% if request.endpoint == 'config' %}active{% endif %}">
+                    <span class="nav-icon">⚙</span> Config
+                </a>
+                <a href="/analytics" class="nav-link {% if request.endpoint == 'analytics' %}active{% endif %}">
+                    <span class="nav-icon">📊</span> Analytics
+                </a>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <span class="footer-text">HiberNet Enhanced v2.0.0</span>
+                <span class="footer-separator">|</span>
+                <span class="footer-text" id="proxy-count">Loading...</span>
+                <span class="footer-separator">|</span>
+                <span class="footer-text" id="system-status">System OK</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/websocket.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

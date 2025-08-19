@@ -1,0 +1,527 @@
+{% extends "base.html" %}
+
+{% block title %}Proxy Management - HiberNet Enhanced{% endblock %}
+
+{% block content %}
+<div class="proxy-management">
+    <!-- Proxy Controls -->
+    <div class="terminal-window">
+        <div class="terminal-header">
+            <span>Proxy Controls</span>
+            <div class="header-controls">
+                <button class="btn btn-secondary" onclick="refreshProxies()">
+                    <span>🔄</span> Refresh
+                </button>
+                <button class="btn" onclick="showAddProxyModal()">
+                    <span>➕</span> Add Proxy
+                </button>
+            </div>
+        </div>
+        <div class="terminal-content">
+            <div class="control-grid">
+                <div class="control-group">
+                    <label class="form-label">Protocol Filter</label>
+                    <select class="form-input" id="protocol-filter" onchange="applyFilters()">
+                        <option value="">All Protocols</option>
+                        <option value="http">HTTP</option>
+                        <option value="https">HTTPS</option>
+                        <option value="socks4">SOCKS4</option>
+                        <option value="socks5">SOCKS5</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label class="form-label">Status Filter</label>
+                    <select class="form-input" id="status-filter" onchange="applyFilters()">
+                        <option value="">All Proxies</option>
+                        <option value="working">Working Only</option>
+                        <option value="failed">Failed Only</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label class="form-label">Limit</label>
+                    <select class="form-input" id="limit-filter" onchange="applyFilters()">
+                        <option value="50">50</option>
+                        <option value="100" selected>100</option>
+                        <option value="250">250</option>
+                        <option value="500">500</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <button class="btn" onclick="checkSelectedProxies()">
+                        <span>⚡</span> Check Selected
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Proxy List -->
+    <div class="terminal-window">
+        <div class="terminal-header">
+            <span>Proxy List</span>
+            <div class="header-info">
+                <span id="proxy-count-display">Loading...</span>
+                <span class="footer-separator">|</span>
+                <span id="selected-count">0 selected</span>
+            </div>
+        </div>
+        <div class="terminal-content">
+            <div class="table-container">
+                <table class="table" id="proxy-table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <input type="checkbox" id="select-all" onchange="toggleSelectAll()">
+                            </th>
+                            <th>ID</th>
+                            <th>Host</th>
+                            <th>Port</th>
+                            <th>Protocol</th>
+                            <th>Status</th>
+                            <th>Success Rate</th>
+                            <th>Response Time</th>
+                            <th>Last Check</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="proxy-table-body">
+                        <tr>
+                            <td colspan="10" class="loading-row">Loading proxies...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination-controls">
+                <button class="btn btn-secondary" id="prev-page" onclick="previousPage()" disabled>
+                    ← Previous
+                </button>
+                <span class="page-info" id="page-info">Page 1</span>
+                <button class="btn btn-secondary" id="next-page" onclick="nextPage()">
+                    Next →
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Proxy Modal -->
+<div class="modal" id="add-proxy-modal">
+    <div class="modal-content">
+        <div class="terminal-window">
+            <div class="terminal-header">
+                <span>Add New Proxy</span>
+                <button class="btn btn-secondary" onclick="hideAddProxyModal()">✕</button>
+            </div>
+            <div class="terminal-content">
+                <form id="add-proxy-form" onsubmit="addNewProxy(event)">
+                    <div class="form-group">
+                        <label class="form-label">Proxy String</label>
+                        <input type="text" class="form-input" id="proxy-input" 
+                               placeholder="host:port or protocol://host:port" required>
+                        <small class="form-help">
+                            Examples: 127.0.0.1:8080, http://proxy.example.com:3128, socks5://user:pass@proxy.com:1080
+                        </small>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn">Add Proxy</button>
+                        <button type="button" class="btn btn-secondary" onclick="hideAddProxyModal()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.proxy-management {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.control-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    align-items: end;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.header-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.table-container {
+    overflow-x: auto;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.table {
+    min-width: 800px;
+}
+
+.table th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.loading-row {
+    text-align: center;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.status-working {
+    color: var(--success-color);
+}
+
+.status-failed {
+    color: var(--error-color);
+}
+
+.status-unknown {
+    color: var(--warning-color);
+}
+
+.pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.page-info {
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    max-width: 500px;
+    width: 90%;
+    max-height: 90%;
+    overflow-y: auto;
+}
+
+.form-help {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+.proxy-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-small {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+@media (max-width: 768px) {
+    .control-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .pagination-controls {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .table-container {
+        font-size: 0.8rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Proxy management state
+let currentProxies = [];
+let currentPage = 1;
+let totalPages = 1;
+let selectedProxies = new Set();
+
+// Initialize proxy management
+document.addEventListener('DOMContentLoaded', function() {
+    loadProxies();
+    
+    // Setup real-time updates
+    if (window.HiberProxyWS && window.HiberProxyWS.socket) {
+        window.HiberProxyWS.socket.on('proxy_update', function(data) {
+            console.log('Received proxy update:', data);
+            loadProxies(); // Refresh the list
+        });
+    }
+});
+
+function loadProxies() {
+    const protocol = document.getElementById('protocol-filter').value;
+    const status = document.getElementById('status-filter').value;
+    const limit = document.getElementById('limit-filter').value;
+    
+    let url = `/api/proxies?limit=${limit}`;
+    if (protocol) url += `&protocol=${protocol}`;
+    if (status === 'working') url += `&working_only=true`;
+    else if (status === 'failed') url += `&working_only=false`;
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            
+            currentProxies = data.proxies || data;
+            updateProxyTable();
+            updateProxyCount();
+        })
+        .catch(error => {
+            console.error('Error loading proxies:', error);
+            showNotification('Error loading proxies: ' + error.message, 'error');
+        });
+}
+
+function updateProxyTable() {
+    const tbody = document.getElementById('proxy-table-body');
+    
+    if (currentProxies.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" class="loading-row">No proxies found</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = currentProxies.map(proxy => `
+        <tr>
+            <td>
+                <input type="checkbox" value="${proxy.id}" onchange="toggleProxySelection(${proxy.id})">
+            </td>
+            <td>${proxy.id}</td>
+            <td>${proxy.host}</td>
+            <td>${proxy.port}</td>
+            <td>${proxy.protocol.toUpperCase()}</td>
+            <td class="status-${proxy.is_working ? 'working' : 'failed'}">
+                ${proxy.is_working ? '✓ Working' : '✗ Failed'}
+            </td>
+            <td>${proxy.success_rate ? (proxy.success_rate * 100).toFixed(1) + '%' : 'N/A'}</td>
+            <td>${proxy.response_time ? proxy.response_time.toFixed(0) + 'ms' : 'N/A'}</td>
+            <td>${proxy.last_checked ? new Date(proxy.last_checked).toLocaleString() : 'Never'}</td>
+            <td>
+                <div class="proxy-actions">
+                    <button class="btn btn-small" onclick="checkSingleProxy(${proxy.id})">Check</button>
+                    <button class="btn btn-small btn-secondary" onclick="deleteProxy(${proxy.id})">Delete</button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function updateProxyCount() {
+    const countDisplay = document.getElementById('proxy-count-display');
+    const workingCount = currentProxies.filter(p => p.is_working).length;
+    countDisplay.textContent = `${currentProxies.length} total, ${workingCount} working`;
+}
+
+function applyFilters() {
+    loadProxies();
+}
+
+function refreshProxies() {
+    showNotification('Refreshing proxy list...', 'info');
+    loadProxies();
+}
+
+function toggleSelectAll() {
+    const selectAll = document.getElementById('select-all');
+    const checkboxes = document.querySelectorAll('#proxy-table-body input[type="checkbox"]');
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAll.checked;
+        const proxyId = parseInt(checkbox.value);
+        if (selectAll.checked) {
+            selectedProxies.add(proxyId);
+        } else {
+            selectedProxies.delete(proxyId);
+        }
+    });
+    
+    updateSelectedCount();
+}
+
+function toggleProxySelection(proxyId) {
+    if (selectedProxies.has(proxyId)) {
+        selectedProxies.delete(proxyId);
+    } else {
+        selectedProxies.add(proxyId);
+    }
+    updateSelectedCount();
+}
+
+function updateSelectedCount() {
+    document.getElementById('selected-count').textContent = `${selectedProxies.size} selected`;
+}
+
+function checkSelectedProxies() {
+    if (selectedProxies.size === 0) {
+        showNotification('No proxies selected', 'warning');
+        return;
+    }
+
+    showNotification(`Checking ${selectedProxies.size} selected proxies...`, 'info');
+
+    // Check all proxies with current filter settings
+    const protocol = document.getElementById('protocol-filter').value;
+
+    fetch('/api/check', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            protocol: protocol || null,
+            limit: selectedProxies.size,
+            working_only: false
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            throw new Error(data.error);
+        }
+        showNotification(`Check completed: ${data.working || 0} working, ${data.failed || 0} failed`, 'success');
+        loadProxies();
+        selectedProxies.clear();
+        updateSelectedCount();
+        document.getElementById('select-all').checked = false;
+    })
+    .catch(error => {
+        showNotification('Error checking proxies: ' + error.message, 'error');
+    });
+}
+
+function checkSingleProxy(proxyId) {
+    showNotification(`Checking proxy ${proxyId}...`, 'info');
+
+    // Check a single proxy by running a limited check
+    fetch('/api/check', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            limit: 1,
+            working_only: false
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            throw new Error(data.error);
+        }
+        showNotification(`Proxy check completed: ${data.working || 0} working`, 'success');
+        loadProxies();
+    })
+    .catch(error => {
+        showNotification('Error checking proxy: ' + error.message, 'error');
+    });
+}
+
+function deleteProxy(proxyId) {
+    if (!confirm(`Are you sure you want to delete proxy ${proxyId}?`)) {
+        return;
+    }
+    
+    // In a real implementation, you'd have a delete endpoint
+    showNotification('Delete functionality not yet implemented', 'warning');
+}
+
+function showAddProxyModal() {
+    document.getElementById('add-proxy-modal').classList.add('show');
+    document.getElementById('proxy-input').focus();
+}
+
+function hideAddProxyModal() {
+    document.getElementById('add-proxy-modal').classList.remove('show');
+    document.getElementById('add-proxy-form').reset();
+}
+
+function addNewProxy(event) {
+    event.preventDefault();
+    
+    const proxyString = document.getElementById('proxy-input').value.trim();
+    if (!proxyString) return;
+    
+    fetch('/api/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ proxy: proxyString })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            throw new Error(data.error);
+        }
+        
+        showNotification(`Proxy added successfully (ID: ${data.proxy_id})`, 'success');
+        hideAddProxyModal();
+        loadProxies();
+    })
+    .catch(error => {
+        showNotification('Error adding proxy: ' + error.message, 'error');
+    });
+}
+
+function previousPage() {
+    if (currentPage > 1) {
+        currentPage--;
+        loadProxies();
+    }
+}
+
+function nextPage() {
+    if (currentPage < totalPages) {
+        currentPage++;
+        loadProxies();
+    }
+}
+
+// Close modal when clicking outside
+document.getElementById('add-proxy-modal').addEventListener('click', function(event) {
+    if (event.target === this) {
+        hideAddProxyModal();
+    }
+});
+</script>
+{% endblock %}

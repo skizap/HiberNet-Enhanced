@@ -1,0 +1,30 @@
+{
+  "description": "HibernetV3.0 Configuration File",
+  "test_settings": {
+    "threads": 1000,
+    "duration": 120,
+    "multiplication": 2,
+    "rate_limit": null,
+    "protocol": "auto",
+    "test_type": "http_flood"
+  },
+  "proxy_settings": {
+    "proxy_file": "proxies.txt",
+    "proxy_type": "http",
+    "proxy_rotation": "health_based",
+    "geoip_db": null
+  },
+  "output_settings": {
+    "real_time_dashboard": true,
+    "dashboard_interval": 3.0,
+    "quiet": false,
+    "verbose": false,
+    "export_csv": "results.csv",
+    "export_json": "report.json"
+  },
+  "advanced_settings": {
+    "user_agents_file": null,
+    "headers_file": null,
+    "session_id": "hibernet-test"
+  }
+}

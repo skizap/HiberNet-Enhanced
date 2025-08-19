@@ -1,0 +1,15 @@
+# Sample target list for HibernetV3.0
+# Add URLs of systems you own or have authorization to test
+#
+# HTTP/HTTPS targets
+# https://your-test-server.com
+# http://192.168.1.100:8080
+# https://your-api.com/endpoint
+#
+# WebSocket targets (use with --test-type websocket)
+# ws://your-websocket-server.com/chat
+# wss://secure-websocket.com/realtime
+#
+# Add your own targets below (remove the # comments)
+# https://your-server.com
+# http://your-local-server:8080

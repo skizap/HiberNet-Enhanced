@@ -1,0 +1,16 @@
+# Sample proxy list for HibernetV3.0
+# Format: host:port or username:password@host:port
+#
+# HTTP Proxies
+# 192.168.1.1:8080
+# proxy.example.com:3128
+#
+# Authenticated HTTP Proxies
+# username:password@proxy.example.com:8080
+#
+# SOCKS Proxies (use with --proxy-type socks5)
+# socks.example.com:1080
+#
+# Add your own proxies below (remove the # comments)
+# proxy1.example.com:8080
+# proxy2.example.com:3128

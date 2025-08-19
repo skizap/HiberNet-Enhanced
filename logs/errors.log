@@ -1,0 +1,160 @@
+2025-08-19 16:33:33,682 - hiber_proxy.web.app - ERROR - Exception on /analytics [GET]
+Traceback (most recent call last):
+  File "/home/robotcowboy808/Documents/Hibernet/hiber_venv/lib/python3.12/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/robotcowboy808/Documents/Hibernet/hiber_venv/lib/python3.12/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/robotcowboy808/Documents/Hibernet/hiber_venv/lib/python3.12/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^
+  File "/home/robotcowboy808/Documents/Hibernet/hiber_venv/lib/python3.12/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/robotcowboy808/Documents/Hibernet/hiber_venv/lib/python3.12/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/robotcowboy808/Documents/Hibernet/hiber_proxy/web/app.py", line 72, in analytics
+    return render_template('analytics.html')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/robotcowboy808/Documents/Hibernet/hiber_venv/lib/python3.12/site-packages/flask/templating.py", line 149, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/robotcowboy808/Documents/Hibernet/hiber_venv/lib/python3.12/site-packages/jinja2/environment.py", line 1087, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/robotcowboy808/Documents/Hibernet/hiber_venv/lib/python3.12/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/robotcowboy808/Documents/Hibernet/hiber_venv/lib/python3.12/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/robotcowboy808/Documents/Hibernet/hiber_venv/lib/python3.12/site-packages/jinja2/loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/robotcowboy808/Documents/Hibernet/hiber_venv/lib/python3.12/site-packages/jinja2/environment.py", line 771, in compile
+    self.handle_exception(source=source_hint)
+  File "/home/robotcowboy808/Documents/Hibernet/hiber_venv/lib/python3.12/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/robotcowboy808/Documents/Hibernet/hiber_proxy/web/templates/analytics.html", line 267, in template
+    {% block scripts %}
+jinja2.exceptions.TemplateSyntaxError: Unexpected end of template. Jinja was looking for the following tags: 'endblock'. The innermost block that needs to be closed is 'block'.
+2025-08-19 16:33:44,317 - hiber_proxy.web - ERROR - Error checking proxies: 415 Unsupported Media Type: Did not attempt to load JSON data because the request Content-Type was not 'application/json'.
+2025-08-19 16:34:20,421 - hiber_proxy.web - ERROR - Error downloading proxies: 415 Unsupported Media Type: Did not attempt to load JSON data because the request Content-Type was not 'application/json'.
+2025-08-19 16:34:34,109 - hiber_proxy.web - ERROR - Error downloading proxies: 415 Unsupported Media Type: Did not attempt to load JSON data because the request Content-Type was not 'application/json'.
+2025-08-19 16:34:36,032 - hiber_proxy.web - ERROR - Error checking proxies: 415 Unsupported Media Type: Did not attempt to load JSON data because the request Content-Type was not 'application/json'.
+2025-08-19 16:35:42,562 - hiber_proxy.web.app - ERROR - Exception on /analytics [GET]
+Traceback (most recent call last):
+  File "/home/robotcowboy808/Documents/Hibernet/hiber_venv/lib/python3.12/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/robotcowboy808/Documents/Hibernet/hiber_venv/lib/python3.12/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/robotcowboy808/Documents/Hibernet/hiber_venv/lib/python3.12/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^
+  File "/home/robotcowboy808/Documents/Hibernet/hiber_venv/lib/python3.12/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/robotcowboy808/Documents/Hibernet/hiber_venv/lib/python3.12/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/robotcowboy808/Documents/Hibernet/hiber_proxy/web/app.py", line 72, in analytics
+    return render_template('analytics.html')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/robotcowboy808/Documents/Hibernet/hiber_venv/lib/python3.12/site-packages/flask/templating.py", line 149, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/robotcowboy808/Documents/Hibernet/hiber_venv/lib/python3.12/site-packages/jinja2/environment.py", line 1087, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/robotcowboy808/Documents/Hibernet/hiber_venv/lib/python3.12/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/robotcowboy808/Documents/Hibernet/hiber_venv/lib/python3.12/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/robotcowboy808/Documents/Hibernet/hiber_venv/lib/python3.12/site-packages/jinja2/loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/robotcowboy808/Documents/Hibernet/hiber_venv/lib/python3.12/site-packages/jinja2/environment.py", line 771, in compile
+    self.handle_exception(source=source_hint)
+  File "/home/robotcowboy808/Documents/Hibernet/hiber_venv/lib/python3.12/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/robotcowboy808/Documents/Hibernet/hiber_proxy/web/templates/analytics.html", line 267, in template
+    {% block scripts %}
+jinja2.exceptions.TemplateSyntaxError: Unexpected end of template. Jinja was looking for the following tags: 'endblock'. The innermost block that needs to be closed is 'block'.
+2025-08-19 16:48:49,516 - hiber_proxy.web - ERROR - Error during cleanup: 'HiberProxyApp' object has no attribute 'cleanup_database'
+2025-08-19 16:52:21,725 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 45.175.155.10:999: 'NoneType' object has no attribute 'success'
+2025-08-19 16:52:22,589 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 43.208.25.125:8123: 'NoneType' object has no attribute 'success'
+2025-08-19 16:52:22,667 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 67.43.236.18:23117: 'NoneType' object has no attribute 'success'
+2025-08-19 16:52:38,180 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 47.250.155.254:8004: 'NoneType' object has no attribute 'success'
+2025-08-19 16:53:04,896 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 181.233.50.233:8787: 'NoneType' object has no attribute 'success'
+2025-08-19 16:53:10,181 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 72.10.160.90:8849: 'NoneType' object has no attribute 'success'
+2025-08-19 16:53:10,656 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 35.72.4.178:5127: 'NoneType' object has no attribute 'success'
+2025-08-19 16:53:25,707 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 190.121.157.41:999: 'NoneType' object has no attribute 'success'
+2025-08-19 16:53:40,760 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 93.115.144.38:1452: 'NoneType' object has no attribute 'success'
+2025-08-19 16:53:40,848 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 67.43.228.253:13377: 'NoneType' object has no attribute 'success'
+2025-08-19 16:53:40,924 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 72.10.164.178:16641: 'NoneType' object has no attribute 'success'
+2025-08-19 16:53:55,973 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 154.73.29.201:8080: 'NoneType' object has no attribute 'success'
+2025-08-19 16:55:02,267 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 209.14.98.5:8080: 'NoneType' object has no attribute 'success'
+2025-08-19 16:55:17,322 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 181.15.220.154:8080: 'NoneType' object has no attribute 'success'
+2025-08-19 16:55:17,922 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 18.61.78.44:11712: 'NoneType' object has no attribute 'success'
+2025-08-19 16:55:32,966 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 102.0.11.152:8080: 'NoneType' object has no attribute 'success'
+2025-08-19 16:55:50,215 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 51.75.206.209:80: 'NoneType' object has no attribute 'success'
+2025-08-19 16:56:05,253 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 38.123.220.173:999: 'NoneType' object has no attribute 'success'
+2025-08-19 16:56:20,941 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 91.214.31.234:8080: 'NoneType' object has no attribute 'success'
+2025-08-19 16:56:26,763 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 157.175.196.63:47239: 'NoneType' object has no attribute 'success'
+2025-08-19 16:56:26,843 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 67.43.236.20:3641: 'NoneType' object has no attribute 'success'
+2025-08-19 16:56:41,884 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 58.69.143.223:41890: 'NoneType' object has no attribute 'success'
+2025-08-19 16:56:59,582 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 158.178.215.19:3144: 'NoneType' object has no attribute 'success'
+2025-08-19 16:57:17,213 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 201.65.173.179:8080: 'NoneType' object has no attribute 'success'
+2025-08-19 16:57:18,936 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 117.161.170.163:9037: 'NoneType' object has no attribute 'success'
+2025-08-19 16:57:38,575 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 173.209.63.68:8190: 'NoneType' object has no attribute 'success'
+2025-08-19 16:57:51,011 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 40.177.202.95:37854: 'NoneType' object has no attribute 'success'
+2025-08-19 16:57:57,225 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 34.216.224.9:10800: 'NoneType' object has no attribute 'success'
+2025-08-19 16:58:12,276 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 103.15.140.177:44759: 'NoneType' object has no attribute 'success'
+2025-08-19 16:58:39,020 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 38.191.42.242:999: 'NoneType' object has no attribute 'success'
+2025-08-19 16:58:45,870 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 72.10.164.178:7291: 'NoneType' object has no attribute 'success'
+2025-08-19 16:58:46,200 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 123.128.12.93:9050: 'NoneType' object has no attribute 'success'
+2025-08-19 16:59:01,247 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 8.243.97.242:999: 'NoneType' object has no attribute 'success'
+2025-08-19 16:59:01,324 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 72.10.160.174:12405: 'NoneType' object has no attribute 'success'
+2025-08-19 16:59:01,775 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 157.175.43.137:8088: 'NoneType' object has no attribute 'success'
+2025-08-19 16:59:19,042 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 186.215.87.194:30001: 'NoneType' object has no attribute 'success'
+2025-08-19 16:59:42,640 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 41.216.174.34:8082: 'NoneType' object has no attribute 'success'
+2025-08-19 16:59:57,684 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 190.108.95.137:999: 'NoneType' object has no attribute 'success'
+2025-08-19 16:59:57,937 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 34.216.224.9:8001: 'NoneType' object has no attribute 'success'
+2025-08-19 17:00:12,989 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 185.200.38.53:8080: 'NoneType' object has no attribute 'success'
+2025-08-19 17:00:18,165 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 47.74.226.8:5001: 'NoneType' object has no attribute 'success'
+2025-08-19 17:00:33,729 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 187.61.98.7:8080: 'NoneType' object has no attribute 'success'
+2025-08-19 17:00:51,863 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 41.203.213.211:8104: 'NoneType' object has no attribute 'success'
+2025-08-19 17:00:52,555 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 43.208.25.125:8095: 'NoneType' object has no attribute 'success'
+2025-08-19 17:01:07,601 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 144.139.210.56:80: 'NoneType' object has no attribute 'success'
+2025-08-19 17:01:07,857 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 34.216.224.9:55056: 'NoneType' object has no attribute 'success'
+2025-08-19 17:01:08,104 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 34.216.224.9:8123: 'NoneType' object has no attribute 'success'
+2025-08-19 17:01:23,154 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 45.70.202.161:999: 'NoneType' object has no attribute 'success'
+2025-08-19 17:01:34,553 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 67.43.236.18:24281: 'NoneType' object has no attribute 'success'
+2025-08-19 17:01:49,607 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 190.7.138.78:8080: 'NoneType' object has no attribute 'success'
+2025-08-19 17:02:04,656 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 169.159.128.142:8080: 'NoneType' object has no attribute 'success'
+2025-08-19 17:02:05,771 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 46.217.240.237:80: 'NoneType' object has no attribute 'success'
+2025-08-19 17:02:30,649 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 173.209.63.70:8182: 'NoneType' object has no attribute 'success'
+2025-08-19 17:02:30,898 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 185.91.121.236:3128: 'NoneType' object has no attribute 'success'
+2025-08-19 17:02:49,690 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 40.176.45.160:41156: 'NoneType' object has no attribute 'success'
+2025-08-19 17:03:04,766 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 79.253.206.196:8080: 'NoneType' object has no attribute 'success'
+2025-08-19 17:03:22,330 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 177.86.207.2:42864: 'NoneType' object has no attribute 'success'
+2025-08-19 17:03:32,143 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 45.176.95.253:8080: 'NoneType' object has no attribute 'success'
+2025-08-19 17:03:40,997 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 222.59.173.105:45189: 'NoneType' object has no attribute 'success'
+2025-08-19 17:03:41,089 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 72.10.160.93:15727: 'NoneType' object has no attribute 'success'
+2025-08-19 17:03:56,980 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 34.216.224.9:1081: 'NoneType' object has no attribute 'success'
+2025-08-19 17:04:12,084 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 180.127.230.15:1080: 'NoneType' object has no attribute 'success'
+2025-08-19 17:04:40,943 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 222.59.173.105:45061: 'NoneType' object has no attribute 'success'
+2025-08-19 17:04:54,025 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 147.75.34.74:10092: 'NoneType' object has no attribute 'success'
+2025-08-19 17:05:38,488 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 196.202.91.43:8080: 'NoneType' object has no attribute 'success'
+2025-08-19 17:05:44,536 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 197.164.101.10:1981: 'NoneType' object has no attribute 'success'
+2025-08-19 17:05:59,637 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 173.209.63.70:8003: 'NoneType' object has no attribute 'success'
+2025-08-19 17:06:00,360 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 8.213.215.187:9098: 'NoneType' object has no attribute 'success'
+2025-08-19 17:06:05,464 - hiber_proxy.core.protocols - ERROR - Unexpected error checking proxy 43.208.25.125:999: 'NoneType' object has no attribute 'success'
+2025-08-19 17:38:27,541 - hiber_proxy.web - ERROR - Error running stress test: 23 (of 50) futures unfinished
+2025-08-19 17:39:02,324 - hiber_proxy.web - ERROR - Error running stress test: 40 (of 50) futures unfinished
